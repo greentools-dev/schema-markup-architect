@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programmatic JSON-LD Schema Architect & SERP Visualizer | GreenTools</title>
+  <meta name="description" content="Generate, validate, and preview structured Schema.org JSON-LD markup with real-time Google Search Rich Result card previews. 100% client-side with optional BYOK AI extraction.">
+  <meta name="keywords" content="json-ld schema generator, schema markup generator, google rich results preview, serp visualizer, product schema, faq schema, software application schema">
+  <link rel="canonical" href="https://greentools-dev.github.io/schema-markup-architect/">
+  <meta property="og:title" content="Programmatic JSON-LD Schema Architect & SERP Visualizer">
+  <meta property="og:description" content="Generate validated Schema.org JSON-LD with live Google Search Rich Result card preview. 100% private in-browser tool.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://greentools-dev.github.io/schema-markup-architect/">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      background-image: 
+        radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+  </style>
+
+  <!-- Structured Data JSON-LD for this tool -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Programmatic JSON-LD Schema Architect & SERP Visualizer",
+        "url": "https://greentools-dev.github.io/schema-markup-architect/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "description": "Browser-based JSON-LD Schema.org generator and real-time Google Search rich result visualizer. Supports Product, FAQPage, SoftwareApplication, HowTo, LocalBusiness, and Article.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is JSON-LD structured data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "JSON-LD (JavaScript Object Notation for Linked Data) is the schema format recommended by Google to communicate page context, unlocking rich results like review stars, pricing, and FAQ accordions in search results."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Are API keys or schema data sent to any server?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. All schema generation, validation, and SERP simulation occurs locally in your browser memory. Optional AI requests connect directly to Google Gemini or OpenAI using your own API key."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="min-h-screen text-slate-900 flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="https://greentools-dev.github.io/" class="flex items-center gap-2 group text-slate-800 hover:text-slate-950 font-bold transition-colors">
+          <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm shadow-emerald-600/30">
+            <i data-lucide="code-2" class="w-4 h-4"></i>
+          </div>
+          <span class="tracking-tight text-base font-extrabold">GreenTools<span class="text-emerald-600">.dev</span></span>
+        </a>
+        <span class="text-slate-300">/</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+          Schema Architect
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <!-- BYOK Key Status Button -->
+        <button type="button" id="btn-open-settings" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-2xs">
+          <i data-lucide="key" class="w-3.5 h-3.5 text-emerald-600"></i>
+          <span id="api-status-label">API Key: Not Set</span>
+        </button>
+        <a href="https://greentools-dev.github.io/" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold transition-colors">
+          <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+          All 40 Tools
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Banner -->
+  <div id="alert-banner" class="hidden bg-slate-900 text-white text-xs px-4 py-2.5 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <span id="alert-message" class="font-medium"></span>
+      <button type="button" id="btn-close-alert" class="text-slate-400 hover:text-white ml-4">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 flex flex-col">
+    <!-- Hero Header -->
+    <div class="text-center max-w-3xl mx-auto mb-8">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        Programmatic JSON-LD Schema Architect
+      </h1>
+      <p class="mt-2.5 text-slate-600 text-sm sm:text-base leading-relaxed">
+        Build, validate, and visualize Schema.org structured data with real-time Google Search Rich Result card previews. 100% private in your browser.
+      </p>
+    </div>
+
+    <!-- Schema Type Tabs & Controls Bar -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0" id="schema-tabs">
+        <button type="button" data-type="Product" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm shadow-emerald-600/20">
+          Product
+        </button>
+        <button type="button" data-type="FAQPage" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+          FAQPage
+        </button>
+        <button type="button" data-type="SoftwareApplication" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+          SoftwareApplication
+        </button>
+        <button type="button" data-type="HowTo" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+          HowTo
+        </button>
+        <button type="button" data-type="LocalBusiness" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+          LocalBusiness
+        </button>
+        <button type="button" data-type="Article" class="tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all">
+          Article
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" id="btn-try-demo" class="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors flex items-center gap-1.5">
+          <i data-lucide="play" class="w-3.5 h-3.5"></i>
+          Try Demo (No Key)
+        </button>
+        <button type="button" id="btn-toggle-ai-modal" class="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+          AI Auto-Extract
+        </button>
+      </div>
+    </div>
+
+    <!-- 2-Column Studio Grid: Builder Forms & SERP Live Preview -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Left Column: Form Builder (7 cols) -->
+      <div class="lg:col-span-7 flex flex-col gap-5">
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <h2 id="builder-title" class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="sliders" class="w-4 h-4 text-emerald-600"></i>
+              Configure Product Properties
+            </h2>
+            <div id="validation-badge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <i data-lucide="check-circle" class="w-3 h-3"></i> Valid Schema.org
+            </div>
+          </div>
+
+          <!-- Dynamic Form Inputs -->
+          <form id="schema-form" class="space-y-4 text-xs">
+            <!-- Injected dynamically by active schema type -->
+          </form>
+        </div>
+
+        <!-- Generated JSON-LD Code Block -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+            <span class="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono flex items-center gap-1.5">
+              <i data-lucide="code" class="w-4 h-4 text-slate-600"></i>
+              JSON-LD Output
+            </span>
+            <div class="flex items-center gap-2">
+              <button type="button" id="btn-copy-script" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span id="label-copy-script">Copy &lt;script&gt; Tag</span>
+              </button>
+              <button type="button" id="btn-download-json" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                Download .json
+              </button>
+            </div>
+          </div>
+          <pre id="json-output" class="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-[11px] leading-relaxed overflow-x-auto max-h-[340px] border border-slate-800 selection:bg-emerald-500 selection:text-slate-900"></pre>
+        </div>
+      </div>
+
+      <!-- Right Column: Google Search Rich Result Live Simulator (5 cols) -->
+      <div class="lg:col-span-5 flex flex-col gap-5 sticky top-24">
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+              Google SERP Simulator
+            </h2>
+            <span class="text-[11px] font-medium text-slate-400">Desktop & Mobile Preview</span>
+          </div>
+
+          <!-- Google Rich Result Card -->
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm hover:shadow transition-shadow">
+            <!-- URL / Breadcrumb Bar -->
+            <div class="flex items-center gap-2 mb-1.5">
+              <div class="w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-700">
+                G
+              </div>
+              <div class="text-[11px] text-slate-600 leading-none truncate max-w-[280px]">
+                <span id="serp-domain" class="font-medium text-slate-900">example.com</span>
+                <span class="text-slate-400"> &rsaquo; </span>
+                <span id="serp-slug" class="text-slate-500">products &rsaquo; item</span>
+              </div>
+            </div>
+
+            <!-- Page Title Link -->
+            <h3 id="serp-title" class="text-base sm:text-lg font-medium text-blue-800 hover:underline cursor-pointer leading-snug line-clamp-2">
+              Acme Ultra Wireless Noise-Cancelling Headphones
+            </h3>
+
+            <!-- Rich Snippet Metrics (Rating, Price, Availability) -->
+            <div id="serp-rich-row" class="mt-1 flex items-center flex-wrap gap-x-2 gap-y-1 text-xs text-slate-600">
+              <div id="serp-rating-box" class="flex items-center gap-1">
+                <span class="text-amber-500 font-bold tracking-tighter">★★★★★</span>
+                <span id="serp-rating-text" class="font-medium">4.8 (142 reviews)</span>
+              </div>
+              <span id="serp-dot-1" class="text-slate-300">&bull;</span>
+              <span id="serp-price-box" class="font-semibold text-slate-900">$199.00</span>
+              <span id="serp-dot-2" class="text-slate-300">&bull;</span>
+              <span id="serp-avail-box" class="text-emerald-700 font-medium">In stock</span>
+            </div>
+
+            <!-- Snippet Description -->
+            <p id="serp-desc" class="mt-2 text-xs sm:text-[13px] text-slate-600 leading-relaxed line-clamp-2">
+              Premium wireless audio with 40-hour battery life and studio-grade active noise cancellation. Order today with free 2-day priority shipping.
+            </p>
+
+            <!-- FAQ Accordion Snippet (if FAQ or has questions) -->
+            <div id="serp-faq-box" class="mt-3 pt-3 border-t border-slate-100 space-y-2">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">People also ask:</div>
+              <div id="serp-faq-items" class="space-y-1.5 text-xs">
+                <!-- Dynamically populated FAQs -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Linter Diagnostics Checklist -->
+          <div class="mt-6 pt-4 border-t border-slate-100">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+              Google Search Validator Checklist
+            </h3>
+            <ul id="linter-checks" class="space-y-1.5 text-xs text-slate-600 font-sans">
+              <!-- Dynamically populated checklist -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Testing Links Helper -->
+        <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/60 text-xs text-emerald-950 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i data-lucide="external-link" class="w-4 h-4 text-emerald-700 shrink-0"></i>
+            <span>Test on Google's Official Rich Results Tool</span>
+          </div>
+          <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-700 text-white font-semibold hover:bg-emerald-800 transition-colors shrink-0">
+            Open Test
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- AI Auto-Extract Modal (BYOK) -->
+    <div id="ai-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full p-6 relative">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-emerald-600"></i>
+            AI Schema Extractor (BYOK)
+          </h3>
+          <button type="button" id="btn-close-ai-modal" class="text-slate-400 hover:text-slate-600">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+          Paste raw product copy, FAQs, or blog text. AI will parse all key Schema.org entities into validated JSON-LD schema.
+        </p>
+
+        <textarea id="ai-input-text" rows="5" class="w-full p-3 text-xs font-sans rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-4" placeholder="Paste product title, price, reviews, specs or FAQ questions here..."></textarea>
+
+        <div class="flex items-center justify-between pt-2">
+          <span class="text-[11px] text-slate-400">Uses your stored API key</span>
+          <button type="button" id="btn-run-ai-extract" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
+            <span id="label-run-ai">Extract Schema</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BYOK Settings Modal -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 relative">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <i data-lucide="key" class="w-4 h-4 text-emerald-600"></i>
+            API Key Settings (BYOK)
+          </h3>
+          <button type="button" id="btn-close-settings" class="text-slate-400 hover:text-slate-600">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Provider</label>
+            <select id="select-provider" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="gemini">Google Gemini (Recommended & Free tier available)</option>
+              <option value="openai">OpenAI / OpenRouter Compatible</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Model</label>
+            <input type="text" id="input-model" value="gemini-2.5-flash" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">API Key</label>
+            <input type="password" id="input-api-key" placeholder="AIzaSy... or sk-..." class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            <p class="text-[11px] text-slate-400 mt-1">Stored only in your browser's localStorage. Never sent to our servers.</p>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between">
+            <button type="button" id="btn-clear-key" class="text-rose-600 hover:text-rose-700 font-semibold">
+              Purge Key
+            </button>
+            <button type="button" id="btn-save-settings" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors">
+              Save Key
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sponsor Slot Container -->
+    <aside id="sponsor-slot" class="mt-12 p-5 rounded-2xl border border-dashed border-slate-300 bg-white text-center text-xs text-slate-500 max-w-3xl mx-auto shadow-2xs">
+      <span class="font-semibold text-slate-600 uppercase tracking-wider text-[11px] block mb-1">Sponsored</span>
+      Boost organic search visibility and click-through rates with validated Schema.org markup.
+    </aside>
+
+    <!-- Plain-English Educational Guide & FAQ -->
+    <section class="mt-12 bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-sm max-w-5xl mx-auto w-full">
+      <h2 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+        <i data-lucide="help-circle" class="w-5 h-5 text-emerald-600"></i>
+        Schema.org Structured Data FAQ
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-600">
+        <div>
+          <h3 class="font-semibold text-slate-800 mb-1">Why use JSON-LD over Microdata?</h3>
+          <p class="leading-relaxed">
+            Google explicitly recommends JSON-LD because it is isolated inside a <code>&lt;script&gt;</code> tag in the head or body, keeping your HTML markup clean without interfering with web components or CSS styling.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-slate-800 mb-1">How do rich results impact CTR?</h3>
+          <p class="leading-relaxed">
+            Pages displaying review stars, stock status, and FAQ accordions take up 2x to 3x more vertical screen real estate on Google SERPs, consistently increasing organic click-through rates by 20% to 35%.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-slate-800 mb-1">Can I nest multiple schemas together?</h3>
+          <p class="leading-relaxed">
+            Yes. Using Schema.org <code>@graph</code> arrays, you can easily combine <code>Product</code>, <code>FAQPage</code>, and <code>BreadcrumbList</code> schemas into a single snippet without conflicts.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-slate-800 mb-1">Is this tool free with zero server logs?</h3>
+          <p class="leading-relaxed">
+            Yes. The generator and previewer execute 100% inside your browser memory. We never store, log, or transmit your product data or API credentials.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200/80 bg-white mt-12 py-6 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-800">GreenTools.dev</span>
+        <span>&bull;</span>
+        <span>100% Client-Side Privacy Web Utilities</span>
+      </div>
+      <div>
+        <span>Built with pure JavaScript, Canvas &amp; Web Standards. Zero tracking.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // State management
+    let activeType = 'Product';
+    let schemaData = {
+      Product: {
+        name: 'Acme Ultra Wireless Noise-Cancelling Headphones',
+        image: 'https://example.com/images/headphones.jpg',
+        description: 'Premium wireless audio with 40-hour battery life and studio-grade active noise cancellation. Order today with free 2-day priority shipping.',
+        brand: 'Acme Audio',
+        sku: 'ACM-NC40-BLK',
+        price: '199.00',
+        currency: 'USD',
+        availability: 'https://schema.org/InStock',
+        ratingValue: '4.8',
+        reviewCount: '142',
+        domain: 'example.com',
+        slug: 'products/audio/ultra-headphones'
+      },
+      FAQPage: {
+        questions: [
+          { q: 'How long does the battery last on a single charge?', a: 'The battery lasts up to 40 hours with active noise cancellation enabled, and up to 50 hours in standard mode.' },
+          { q: 'Is it water and sweat resistant?', a: 'Yes, it features an IPX4 splash-resistance rating suitable for workouts and light rain.' },
+          { q: 'What is the return policy?', a: 'We offer a 30-day no-questions-asked money-back guarantee with free return shipping.' }
+        ],
+        domain: 'example.com',
+        slug: 'faq/headphones'
+      },
+      SoftwareApplication: {
+        name: 'GreenTools Audio Studio',
+        applicationCategory: 'MultimediaApplication',
+        operatingSystem: 'Windows, macOS, Linux, ChromeOS',
+        price: '0',
+        currency: 'USD',
+        ratingValue: '4.9',
+        reviewCount: '312',
+        description: 'Professional browser-based audio analyzer and loudness compliance tool with zero cloud processing.',
+        domain: 'greentools.dev',
+        slug: 'apps/audio-loudness-meter'
+      },
+      HowTo: {
+        name: 'How to Reset Your Acme Headphones',
+        totalTime: 'PT3M',
+        description: 'Follow these quick steps to reset your Bluetooth connection and restore factory defaults.',
+        steps: [
+          { name: 'Power Off', text: 'Press and hold the power button for 3 seconds until the LED turns off.' },
+          { name: 'Hold Pairing', text: 'Hold the Bluetooth and Volume Up buttons simultaneously for 7 seconds until the LED flashes blue and white.' },
+          { name: 'Reconnect Device', text: 'Open your phone Bluetooth settings and tap Acme Ultra to pair.' }
+        ],
+        domain: 'example.com',
+        slug: 'support/how-to-reset'
+      },
+      LocalBusiness: {
+        name: 'Greenfield Artisan Coffee Roasters',
+        telephone: '+1-555-839-2041',
+        streetAddress: '742 Evergreen Terrace',
+        addressLocality: 'Portland',
+        addressRegion: 'OR',
+        postalCode: '97201',
+        priceRange: '$$',
+        ratingValue: '4.9',
+        reviewCount: '89',
+        domain: 'greenfieldcoffee.com',
+        slug: 'locations/downtown'
+      },
+      Article: {
+        headline: 'The Ultimate Guide to Modern Client-Side Web Performance',
+        author: 'Alex Rivera',
+        publisher: 'GreenTools Insights',
+        datePublished: '2026-11-01',
+        dateModified: '2026-11-06',
+        description: 'Learn how zero-server in-browser architectures eliminate cloud compute costs while maintaining 100% user privacy.',
+        domain: 'greentools.dev',
+        slug: 'insights/client-side-performance'
+      }
+    };
+
+    // DOM Elements
+    const schemaForm = document.getElementById('schema-form');
+    const jsonOutput = document.getElementById('json-output');
+    const builderTitle = document.getElementById('builder-title');
+    const serpDomain = document.getElementById('serp-domain');
+    const serpSlug = document.getElementById('serp-slug');
+    const serpTitle = document.getElementById('serp-title');
+    const serpDesc = document.getElementById('serp-desc');
+    const serpRatingBox = document.getElementById('serp-rating-box');
+    const serpRatingText = document.getElementById('serp-rating-text');
+    const serpPriceBox = document.getElementById('serp-price-box');
+    const serpAvailBox = document.getElementById('serp-avail-box');
+    const serpDot1 = document.getElementById('serp-dot-1');
+    const serpDot2 = document.getElementById('serp-dot-2');
+    const serpFaqBox = document.getElementById('serp-faq-box');
+    const serpFaqItems = document.getElementById('serp-faq-items');
+    const linterChecks = document.getElementById('linter-checks');
+    const btnCopyScript = document.getElementById('btn-copy-script');
+    const labelCopyScript = document.getElementById('label-copy-script');
+    const btnDownloadJson = document.getElementById('btn-download-json');
+    const btnTryDemo = document.getElementById('btn-try-demo');
+    const alertBanner = document.getElementById('alert-banner');
+    const alertMessage = document.getElementById('alert-message');
+    const btnCloseAlert = document.getElementById('btn-close-alert');
+
+    // BYOK elements
+    const btnOpenSettings = document.getElementById('btn-open-settings');
+    const btnCloseSettings = document.getElementById('btn-close-settings');
+    const settingsModal = document.getElementById('settings-modal');
+    const apiStatusLabel = document.getElementById('api-status-label');
+    const selectProvider = document.getElementById('select-provider');
+    const inputModel = document.getElementById('input-model');
+    const inputApiKey = document.getElementById('input-api-key');
+    const btnSaveSettings = document.getElementById('btn-save-settings');
+    const btnClearKey = document.getElementById('btn-clear-key');
+
+    // AI modal elements
+    const btnToggleAiModal = document.getElementById('btn-toggle-ai-modal');
+    const btnCloseAiModal = document.getElementById('btn-close-ai-modal');
+    const aiModal = document.getElementById('ai-modal');
+    const aiInputText = document.getElementById('ai-input-text');
+    const btnRunAiExtract = document.getElementById('btn-run-ai-extract');
+    const labelRunAi = document.getElementById('label-run-ai');
+
+    // Initialize BYOK settings
+    function loadSettings() {
+      const key = localStorage.getItem('byok_api_key');
+      const provider = localStorage.getItem('byok_provider') || 'gemini';
+      const model = localStorage.getItem('byok_model') || (provider === 'gemini' ? 'gemini-2.5-flash' : 'gpt-4o-mini');
+
+      selectProvider.value = provider;
+      inputModel.value = model;
+      if (key) {
+        inputApiKey.value = key;
+        apiStatusLabel.textContent = `API: ${key.slice(0, 4)}...${key.slice(-4)}`;
+      } else {
+        inputApiKey.value = '';
+        apiStatusLabel.textContent = 'API Key: Not Set';
+      }
+    }
+
+    btnOpenSettings.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+    btnCloseSettings.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+    btnSaveSettings.addEventListener('click', () => {
+      const key = inputApiKey.value.trim();
+      const provider = selectProvider.value;
+      const model = inputModel.value.trim();
+
+      localStorage.setItem('byok_provider', provider);
+      localStorage.setItem('byok_model', model);
+      if (key) {
+        localStorage.setItem('byok_api_key', key);
+      } else {
+        localStorage.removeItem('byok_api_key');
+      }
+      loadSettings();
+      settingsModal.classList.add('hidden');
+      showAlert('API Key settings saved.');
+    });
+
+    btnClearKey.addEventListener('click', () => {
+      localStorage.removeItem('byok_api_key');
+      inputApiKey.value = '';
+      loadSettings();
+      settingsModal.classList.add('hidden');
+      showAlert('API Key removed.');
+    });
+
+    function showAlert(msg) {
+      alertMessage.textContent = msg;
+      alertBanner.classList.remove('hidden');
+    }
+    btnCloseAlert.addEventListener('click', () => alertBanner.classList.add('hidden'));
+
+    // Render Forms for activeType
+    function renderForm() {
+      builderTitle.innerHTML = `<i data-lucide="sliders" class="w-4 h-4 text-emerald-600"></i> Configure ${activeType} Properties`;
+      schemaForm.innerHTML = '';
+      const data = schemaData[activeType];
+
+      if (activeType === 'Product') {
+        schemaForm.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Product Name</label>
+              <input type="text" data-field="name" value="${data.name}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Brand Name</label>
+              <input type="text" data-field="brand" value="${data.brand}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Product Description</label>
+            <textarea data-field="description" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">${data.description}</textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Price (e.g. 199.00)</label>
+              <input type="text" data-field="price" value="${data.price}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Currency</label>
+              <input type="text" data-field="currency" value="${data.currency}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Availability</label>
+              <select data-field="availability" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="https://schema.org/InStock" ${data.availability.includes('InStock') ? 'selected' : ''}>In Stock</option>
+                <option value="https://schema.org/OutOfStock" ${data.availability.includes('OutOfStock') ? 'selected' : ''}>Out of Stock</option>
+                <option value="https://schema.org/PreOrder" ${data.availability.includes('PreOrder') ? 'selected' : ''}>Pre-Order</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Rating Value (1.0 - 5.0)</label>
+              <input type="text" data-field="ratingValue" value="${data.ratingValue}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Review Count</label>
+              <input type="text" data-field="reviewCount" value="${data.reviewCount}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Domain</label>
+              <input type="text" data-field="domain" value="${data.domain}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">URL Path / Slug</label>
+              <input type="text" data-field="slug" value="${data.slug}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+        `;
+      } else if (activeType === 'FAQPage') {
+        let questionsHtml = '';
+        data.questions.forEach((item, idx) => {
+          questionsHtml += `
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 mb-2 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-slate-700">Q&A #${idx + 1}</span>
+                ${data.questions.length > 1 ? `<button type="button" class="btn-remove-faq text-rose-600 hover:text-rose-800 text-[11px] font-semibold" data-index="${idx}">Remove</button>` : ''}
+              </div>
+              <input type="text" class="faq-q-input w-full px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold" data-index="${idx}" value="${item.q}">
+              <textarea class="faq-a-input w-full px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" rows="2" data-index="${idx}">${item.a}</textarea>
+            </div>
+          `;
+        });
+        schemaForm.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="font-semibold text-slate-700">Questions & Answers</label>
+              <button type="button" id="btn-add-faq" class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200 font-bold text-xs flex items-center gap-1">+ Add Question</button>
+            </div>
+            <div id="faq-list">${questionsHtml}</div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Domain</label>
+              <input type="text" data-field="domain" value="${data.domain}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">URL Slug</label>
+              <input type="text" data-field="slug" value="${data.slug}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+        `;
+      } else if (activeType === 'SoftwareApplication') {
+        schemaForm.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">App Name</label>
+              <input type="text" data-field="name" value="${data.name}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Category</label>
+              <input type="text" data-field="applicationCategory" value="${data.applicationCategory}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Supported Operating Systems</label>
+            <input type="text" data-field="operatingSystem" value="${data.operatingSystem}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">App Description</label>
+            <textarea data-field="description" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">${data.description}</textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Price</label>
+              <input type="text" data-field="price" value="${data.price}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Rating</label>
+              <input type="text" data-field="ratingValue" value="${data.ratingValue}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Review Count</label>
+              <input type="text" data-field="reviewCount" value="${data.reviewCount}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Domain</label>
+              <input type="text" data-field="domain" value="${data.domain}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">URL Slug</label>
+              <input type="text" data-field="slug" value="${data.slug}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+        `;
+      } else if (activeType === 'HowTo') {
+        let stepsHtml = '';
+        data.steps.forEach((st, idx) => {
+          stepsHtml += `
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 mb-2 space-y-2">
+              <span class="font-bold text-slate-700">Step ${idx + 1}</span>
+              <input type="text" class="step-name-input w-full px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold" data-index="${idx}" value="${st.name}">
+              <textarea class="step-text-input w-full px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500" rows="1" data-index="${idx}">${st.text}</textarea>
+            </div>
+          `;
+        });
+        schemaForm.innerHTML = `
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">How-To Title</label>
+            <input type="text" data-field="name" value="${data.name}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Total Time (ISO 8601, e.g. PT3M)</label>
+              <input type="text" data-field="totalTime" value="${data.totalTime}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Domain</label>
+              <input type="text" data-field="domain" value="${data.domain}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Description</label>
+            <textarea data-field="description" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">${data.description}</textarea>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Steps</label>
+            <div>${stepsHtml}</div>
+          </div>
+        `;
+      } else if (activeType === 'LocalBusiness') {
+        schemaForm.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Business Name</label>
+              <input type="text" data-field="name" value="${data.name}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Telephone</label>
+              <input type="text" data-field="telephone" value="${data.telephone}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Street Address</label>
+            <input type="text" data-field="streetAddress" value="${data.streetAddress}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">City / Locality</label>
+              <input type="text" data-field="addressLocality" value="${data.addressLocality}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">State / Region</label>
+              <input type="text" data-field="addressRegion" value="${data.addressRegion}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Postal Code</label>
+              <input type="text" data-field="postalCode" value="${data.postalCode}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+        `;
+      } else if (activeType === 'Article') {
+        schemaForm.innerHTML = `
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Headline</label>
+            <input type="text" data-field="headline" value="${data.headline}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Author Name</label>
+              <input type="text" data-field="author" value="${data.author}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Publisher</label>
+              <input type="text" data-field="publisher" value="${data.publisher}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Summary Description</label>
+            <textarea data-field="description" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">${data.description}</textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Date Published (YYYY-MM-DD)</label>
+              <input type="text" data-field="datePublished" value="${data.datePublished}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">Date Modified (YYYY-MM-DD)</label>
+              <input type="text" data-field="dateModified" value="${data.dateModified}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono">
+            </div>
+          </div>
+        `;
+      }
+
+      attachFormListeners();
+      updateOutputs();
+      lucide.createIcons();
+    }
+
+    function attachFormListeners() {
+      schemaForm.querySelectorAll('input, textarea, select').forEach(el => {
+        el.addEventListener('input', (e) => {
+          const field = e.target.getAttribute('data-field');
+          if (field) {
+            schemaData[activeType][field] = e.target.value;
+            updateOutputs();
+          }
+        });
+      });
+
+      // FAQ Specific listeners
+      if (activeType === 'FAQPage') {
+        const btnAddFaq = document.getElementById('btn-add-faq');
+        if (btnAddFaq) {
+          btnAddFaq.addEventListener('click', () => {
+            schemaData.FAQPage.questions.push({ q: 'New frequently asked question?', a: 'Detailed answer explaining the solution.' });
+            renderForm();
+          });
+        }
+        document.querySelectorAll('.btn-remove-faq').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const idx = parseInt(e.target.getAttribute('data-index'), 10);
+            schemaData.FAQPage.questions.splice(idx, 1);
+            renderForm();
+          });
+        });
+        document.querySelectorAll('.faq-q-input').forEach(inp => {
+          inp.addEventListener('input', (e) => {
+            const idx = parseInt(e.target.getAttribute('data-index'), 10);
+            schemaData.FAQPage.questions[idx].q = e.target.value;
+            updateOutputs();
+          });
+        });
+        document.querySelectorAll('.faq-a-input').forEach(inp => {
+          inp.addEventListener('input', (e) => {
+            const idx = parseInt(e.target.getAttribute('data-index'), 10);
+            schemaData.FAQPage.questions[idx].a = e.target.value;
+            updateOutputs();
+          });
+        });
+      }
+    }
+
+    // Build Schema.org JSON-LD object
+    function generateJsonLd() {
+      const data = schemaData[activeType];
+      let json = { "@context": "https://schema.org" };
+
+      if (activeType === 'Product') {
+        json["@type"] = "Product";
+        json["name"] = data.name;
+        json["image"] = data.image || `https://${data.domain}/images/product.jpg`;
+        json["description"] = data.description;
+        json["brand"] = { "@type": "Brand", "name": data.brand };
+        json["sku"] = data.sku;
+        json["offers"] = {
+          "@type": "Offer",
+          "url": `https://${data.domain}/${data.slug}`,
+          "priceCurrency": data.currency,
+          "price": data.price,
+          "availability": data.availability,
+          "itemCondition": "https://schema.org/NewCondition"
+        };
+        if (data.ratingValue && data.reviewCount) {
+          json["aggregateRating"] = {
+            "@type": "AggregateRating",
+            "ratingValue": data.ratingValue,
+            "reviewCount": data.reviewCount
+          };
+        }
+      } else if (activeType === 'FAQPage') {
+        json["@type"] = "FAQPage";
+        json["mainEntity"] = data.questions.map(q => ({
+          "@type": "Question",
+          "name": q.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": q.a
+          }
+        }));
+      } else if (activeType === 'SoftwareApplication') {
+        json["@type"] = "SoftwareApplication";
+        json["name"] = data.name;
+        json["applicationCategory"] = data.applicationCategory;
+        json["operatingSystem"] = data.operatingSystem;
+        json["description"] = data.description;
+        json["offers"] = {
+          "@type": "Offer",
+          "price": data.price,
+          "priceCurrency": data.currency
+        };
+        if (data.ratingValue) {
+          json["aggregateRating"] = {
+            "@type": "AggregateRating",
+            "ratingValue": data.ratingValue,
+            "reviewCount": data.reviewCount || "10"
+          };
+        }
+      } else if (activeType === 'HowTo') {
+        json["@type"] = "HowTo";
+        json["name"] = data.name;
+        json["totalTime"] = data.totalTime;
+        json["description"] = data.description;
+        json["step"] = data.steps.map((st, i) => ({
+          "@type": "HowToStep",
+          "position": i + 1,
+          "name": st.name,
+          "text": st.text
+        }));
+      } else if (activeType === 'LocalBusiness') {
+        json["@type"] = "LocalBusiness";
+        json["name"] = data.name;
+        json["telephone"] = data.telephone;
+        json["priceRange"] = data.priceRange;
+        json["address"] = {
+          "@type": "PostalAddress",
+          "streetAddress": data.streetAddress,
+          "addressLocality": data.addressLocality,
+          "addressRegion": data.addressRegion,
+          "postalCode": data.postalCode,
+          "addressCountry": "US"
+        };
+      } else if (activeType === 'Article') {
+        json["@type"] = "Article";
+        json["headline"] = data.headline;
+        json["description"] = data.description;
+        json["author"] = { "@type": "Person", "name": data.author };
+        json["publisher"] = { "@type": "Organization", "name": data.publisher };
+        json["datePublished"] = data.datePublished;
+        json["dateModified"] = data.dateModified;
+      }
+
+      return json;
+    }
+
+    // Update Output Displays and SERP Visualizer
+    function updateOutputs() {
+      const data = schemaData[activeType];
+      const json = generateJsonLd();
+      const jsonString = JSON.stringify(json, null, 2);
+      jsonOutput.textContent = jsonString;
+
+      // Update SERP preview card
+      serpDomain.textContent = data.domain || 'example.com';
+      serpSlug.textContent = data.slug || 'page';
+
+      if (activeType === 'Product') {
+        serpTitle.textContent = data.name;
+        serpDesc.textContent = data.description;
+        serpRatingBox.classList.remove('hidden');
+        serpPriceBox.classList.remove('hidden');
+        serpAvailBox.classList.remove('hidden');
+        serpDot1.classList.remove('hidden');
+        serpDot2.classList.remove('hidden');
+        serpRatingText.textContent = `${data.ratingValue} (${data.reviewCount} reviews)`;
+        serpPriceBox.textContent = `$${data.price}`;
+        serpAvailBox.textContent = data.availability.includes('InStock') ? 'In stock' : 'Out of stock';
+        serpFaqBox.classList.add('hidden');
+      } else if (activeType === 'FAQPage') {
+        serpTitle.textContent = `Frequently Asked Questions | ${data.domain}`;
+        serpDesc.textContent = 'Get instant answers to the most common questions, support queries, and documentation specs.';
+        serpRatingBox.classList.add('hidden');
+        serpPriceBox.classList.add('hidden');
+        serpAvailBox.classList.add('hidden');
+        serpDot1.classList.add('hidden');
+        serpDot2.classList.add('hidden');
+        serpFaqBox.classList.remove('hidden');
+        serpFaqItems.innerHTML = data.questions.slice(0, 3).map(q => `
+          <div class="py-1 px-2.5 rounded bg-slate-50 border border-slate-100 flex items-center justify-between text-slate-700">
+            <span class="font-medium">${q.q}</span>
+            <span class="text-slate-400 font-mono text-[10px]">&#9662;</span>
+          </div>
+        `).join('');
+      } else if (activeType === 'SoftwareApplication') {
+        serpTitle.textContent = `${data.name} - Official Web App`;
+        serpDesc.textContent = data.description;
+        serpRatingBox.classList.remove('hidden');
+        serpPriceBox.classList.remove('hidden');
+        serpAvailBox.classList.add('hidden');
+        serpDot1.classList.remove('hidden');
+        serpDot2.classList.add('hidden');
+        serpRatingText.textContent = `${data.ratingValue} (${data.reviewCount} reviews)`;
+        serpPriceBox.textContent = data.price === '0' ? 'Free' : `$${data.price}`;
+        serpFaqBox.classList.add('hidden');
+      } else {
+        serpTitle.textContent = data.name || data.headline || 'Web Resource';
+        serpDesc.textContent = data.description || 'Verified Schema.org entity metadata formatted for Google Search rich indexation.';
+        serpRatingBox.classList.add('hidden');
+        serpPriceBox.classList.add('hidden');
+        serpAvailBox.classList.add('hidden');
+        serpDot1.classList.add('hidden');
+        serpDot2.classList.add('hidden');
+        serpFaqBox.classList.add('hidden');
+      }
+
+      // Update Linter Checklist
+      renderLinter(json);
+    }
+
+    function renderLinter(json) {
+      const checks = [];
+      checks.push({ label: 'Valid JSON-LD Syntax', pass: true });
+      checks.push({ label: 'Standard @context: "https://schema.org"', pass: json['@context'] === 'https://schema.org' });
+      checks.push({ label: `Declared @type: "${activeType}"`, pass: !!json['@type'] });
+
+      if (activeType === 'Product') {
+        checks.push({ label: 'Required Offer price & currency set', pass: !!(json.offers && json.offers.price && json.offers.priceCurrency) });
+        checks.push({ label: 'Aggregate rating above 1.0', pass: parseFloat(schemaData.Product.ratingValue) >= 1.0 });
+      } else if (activeType === 'FAQPage') {
+        checks.push({ label: 'At least 1 valid Question & Answer pair', pass: json.mainEntity && json.mainEntity.length > 0 });
+      } else if (activeType === 'SoftwareApplication') {
+        checks.push({ label: 'Application category declared', pass: !!json.applicationCategory });
+      }
+
+      linterChecks.innerHTML = checks.map(c => `
+        <li class="flex items-center gap-2 ${c.pass ? 'text-emerald-700' : 'text-rose-600'}">
+          <i data-lucide="${c.pass ? 'check' : 'x'}" class="w-3.5 h-3.5 shrink-0"></i>
+          <span>${c.label}</span>
+        </li>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    // Tab Switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.className = 'tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all';
+        });
+        btn.className = 'tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm shadow-emerald-600/20';
+        activeType = btn.getAttribute('data-type');
+        renderForm();
+      });
+    });
+
+    // Copy & Download
+    btnCopyScript.addEventListener('click', async () => {
+      const json = generateJsonLd();
+      const scriptTag = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
+      await navigator.clipboard.writeText(scriptTag);
+      labelCopyScript.textContent = 'Copied to Clipboard!';
+      btnCopyScript.classList.replace('bg-emerald-600', 'bg-emerald-700');
+      setTimeout(() => {
+        labelCopyScript.textContent = 'Copy <script> Tag';
+        btnCopyScript.classList.replace('bg-emerald-700', 'bg-emerald-600');
+      }, 2000);
+    });
+
+    btnDownloadJson.addEventListener('click', () => {
+      const json = generateJsonLd();
+      const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${activeType.toLowerCase()}-schema.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Demo Mode Loader
+    btnTryDemo.addEventListener('click', () => {
+      activeType = 'Product';
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.className = b.getAttribute('data-type') === 'Product' 
+          ? 'tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm shadow-emerald-600/20'
+          : 'tab-btn px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-all';
+      });
+      schemaData.Product.name = 'ErgoPro Ultra Vertical Wireless Mouse';
+      schemaData.Product.price = '89.99';
+      schemaData.Product.ratingValue = '4.9';
+      schemaData.Product.reviewCount = '238';
+      schemaData.Product.description = 'Scientific ergonomic vertical mouse designed to eliminate wrist strain and RSI with silent switches and 70-day rechargeable battery.';
+      renderForm();
+      showAlert('Loaded verified Product Rich Result Demo!');
+    });
+
+    // AI Modal handlers
+    btnToggleAiModal.addEventListener('click', () => aiModal.classList.remove('hidden'));
+    btnCloseAiModal.addEventListener('click', () => aiModal.classList.add('hidden'));
+
+    btnRunAiExtract.addEventListener('click', async () => {
+      const text = aiInputText.value.trim();
+      if (!text) {
+        showAlert('Please paste some text or product information first.');
+        return;
+      }
+      const key = localStorage.getItem('byok_api_key');
+      if (!key) {
+        showAlert('Please set your API key first (top right) or use Try Demo.');
+        settingsModal.classList.remove('hidden');
+        return;
+      }
+
+      const provider = localStorage.getItem('byok_provider') || 'gemini';
+      const model = localStorage.getItem('byok_model') || (provider === 'gemini' ? 'gemini-2.5-flash' : 'gpt-4o-mini');
+
+      labelRunAi.textContent = 'Extracting Schema...';
+      btnRunAiExtract.disabled = true;
+
+      const systemPrompt = `You are a Schema.org JSON-LD extraction engine.
+Given the input text, extract product attributes or Q&As. Return ONLY a JSON object with:
+{
+  "name": "Extracted item name",
+  "description": "Clean summary",
+  "price": "Number string e.g. 49.99",
+  "currency": "USD",
+  "brand": "Brand name",
+  "ratingValue": "4.8",
+  "reviewCount": "50"
+}
+Output zero extra markdown or commentary outside the JSON object.`;
+
+      try {
+        let resultJson;
+        if (provider === 'gemini') {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: `${systemPrompt}\n\nINPUT TEXT:\n${text}` }] }],
+              generationConfig: { responseMimeType: 'application/json' }
+            })
+          });
+          const data = await res.json();
+          resultJson = JSON.parse(data.candidates[0].content.parts[0].text);
+        } else {
+          const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${key}`
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: text }
+              ],
+              response_format: { type: 'json_object' }
+            })
+          });
+          const data = await res.json();
+          resultJson = JSON.parse(data.choices[0].message.content);
+        }
+
+        if (resultJson) {
+          activeType = 'Product';
+          schemaData.Product.name = resultJson.name || schemaData.Product.name;
+          schemaData.Product.description = resultJson.description || schemaData.Product.description;
+          schemaData.Product.price = resultJson.price || schemaData.Product.price;
+          schemaData.Product.brand = resultJson.brand || schemaData.Product.brand;
+          if (resultJson.ratingValue) schemaData.Product.ratingValue = String(resultJson.ratingValue);
+          if (resultJson.reviewCount) schemaData.Product.reviewCount = String(resultJson.reviewCount);
+          renderForm();
+          aiModal.classList.add('hidden');
+          showAlert('Schema successfully extracted from text!');
+        }
+      } catch (err) {
+        showAlert('AI extraction failed: ' + err.message);
+      } finally {
+        labelRunAi.textContent = 'Extract Schema';
+        btnRunAiExtract.disabled = false;
+      }
+    });
+
+    // Initial render
+    loadSettings();
+    renderForm();
+  </script>
+</body>
+</html>
